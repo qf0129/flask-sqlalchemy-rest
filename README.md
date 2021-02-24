@@ -37,3 +37,16 @@ With the above application you can visit the following APIs:
 [GET]    http://127.0.0.1:5000/api/user/<id>
 [PUT]    http://127.0.0.1:5000/api/user/<id>
 [DELETE] http://127.0.0.1:5000/api/user/<id>
+```
+
+## Documentation 
+
+```
+class Rest(object):
+    def __init__(self, app=None, db=None, url_prefix='/api', auth_decorator=None):
+        ...
+    def init_app(self, app, db=None, url_prefix=None, auth_decorator=None)
+        ...
+    def add_model(self, model, url_name=None, methods=['GET', 'POST', 'PUT', 'DELETE'], ignore_columns=[]):
+        ...
+```
