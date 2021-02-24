@@ -18,10 +18,10 @@ class Rest(object):
         self.url_prefix = url_prefix or self.url_prefix
         self.auth_decorator = auth_decorator or self.auth_decorator
 
-    def add_model(self, model, url_name=None, methods=['GET', 'POST', 'PUT', 'DELETE']):
+    def add_model(self, model, url_name=None, methods=['GET', 'POST', 'PUT', 'DELETE'], ignore_columns=[]):
         model_name = model.__tablename__
         blueprint = Blueprint(f'rest_{model_name}', __name__, url_prefix=self.url_prefix)
-        view_func = RestModel.as_view(model_name, db=self.db, model=model)
+        view_func = RestModel.as_view(model_name, db=self.db, model=model, ignore_columns=ignore_columns)
         if self.auth_decorator:
             view_func = self.auth_decorator(view_func)
         url_name = url_name if url_name else model_name
