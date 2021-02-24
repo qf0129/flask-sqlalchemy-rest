@@ -21,11 +21,32 @@ rest = Rest(app, db)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String, unique=True, nullable=False)
-    email = db.Column(db.String, unique=True, nullable=False)
+    username = db.Column(db.String)
+    email = db.Column(db.String)
 
 with app.app_context():
     db.create_all()
 
 rest.add_model(User)
+```
+
+With the above application you can visit the following APIs:
+```
+[GET]    http://127.0.0.1:5000/api/user
+[POST]   http://127.0.0.1:5000/api/user
+[GET]    http://127.0.0.1:5000/api/user/<id>
+[PUT]    http://127.0.0.1:5000/api/user/<id>
+[DELETE] http://127.0.0.1:5000/api/user/<id>
+```
+
+## Documentation 
+
+```
+class Rest(object):
+    def __init__(self, app=None, db=None, url_prefix='/api', auth_decorator=None):
+        ...
+    def init_app(self, app, db=None, url_prefix=None, auth_decorator=None)
+        ...
+    def add_model(self, model, url_name=None, methods=['GET', 'POST', 'PUT', 'DELETE'], ignore_columns=[]):
+        ...
 ```
