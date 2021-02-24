@@ -4,10 +4,9 @@ Flask-SQLAlchemy-Rest
 Flask-SQLAlchemy-Rest is an extension for Flask that can easily generate rest api with Flask-SQLAlchemy.
 
 #### Installing
-`pip install Flask-SQLAlchemy-Rest`
+`$ pip install flask_sqlalchemy_rest`
 
 #### Example
--------
 ```python
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
