@@ -32,7 +32,7 @@ rest.add_model(User)
 
 With the above application you can visit the following APIs:
 ```
-[GET]    http://127.0.0.1:5000/api/user  # ?page=1&page_size=10&email=xxx&username=xxx&contain_keys=email,username
+[GET]    http://127.0.0.1:5000/api/user   # ?page=1&page_size=10&email=xxx&username=xxx&contain_keys=email,username&sort=id&desc=1
 [POST]   http://127.0.0.1:5000/api/user
 [GET]    http://127.0.0.1:5000/api/user/<id>
 [PUT]    http://127.0.0.1:5000/api/user/<id>
@@ -42,8 +42,8 @@ With the above application you can visit the following APIs:
 ## Documentation 
 
 
-Class `Rest()`  
-&nbsp;&nbsp;def `__init__`(app=None, db=None, url_prefix='/api', auth_decorator=None)    
+Class `Rest()`   
+```def __init__(app=None, db=None, url_prefix='/api', auth_decorator=None)```    
 &nbsp;&nbsp;def `init_app`(app, db=None, url_prefix=None, auth_decorator=None)   
 &nbsp;&nbsp;&nbsp;&nbsp;**app:** Flask application instance  
 &nbsp;&nbsp;&nbsp;&nbsp;**db:**  Flask-SQLAlchemy instance   
