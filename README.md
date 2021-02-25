@@ -45,8 +45,8 @@ With the above application you can visit the following APIs:
 #### GET parmas 
 `[GET] http://127.0.0.1:5000/api/user?page=1&page_size=10&sort=id&desc=1&email=xxx&username=xxx&contain_keys=email,username`  
 **page:** Page index, default 1   
-**page_size:** Number of pages, default 10
-**sort:** Column name to sort
+**page_size:** Number of pages, default 10   
+**sort:** Column name to sort  
 **desc:** If `desc=1`, will sort the data in descending order   
 **email:** Column name of User   
 **username:** Column name of User   
