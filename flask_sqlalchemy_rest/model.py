@@ -1,4 +1,4 @@
-from flask import request, jsonify
+from flask import request, jsonify, current_app
 from flask.views import MethodView
 from datetime import datetime
 
@@ -36,7 +36,8 @@ class RestModel(MethodView):
                 self.db.session.add(obj)
                 self.db.session.commit()
                 return self._resp(data={"id": obj.id})
-            except:
+            except Exception as e:
+                current_app.logger.warning(str(e))
                 return self._resp(code=400, msg='invalid data')
         return self._resp(code=400, msg='invalid json')
 
@@ -50,7 +51,8 @@ class RestModel(MethodView):
                             setattr(obj, k, self._filter_data(v))
                     self.db.session.commit()
                     return self._resp(data={"id": obj.id})
-                except:
+                except Exception as e:
+                    current_app.logger.warning(str(e))
                     return self._resp(code=400, msg='invalid data')
             else:
                 return self._resp(code=404, msg='obj not found')

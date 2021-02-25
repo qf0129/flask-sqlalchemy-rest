@@ -1,9 +1,7 @@
 from .model import RestModel
 from .rest import Rest
 
-__all__ = [
-    "RestModel",
-    "Rest",
-]
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"
+__all__ = ["RestModel", "Rest"]
+
