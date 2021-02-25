@@ -65,6 +65,8 @@ class RestModel(MethodView):
         page_size = int(page_size) if isinstance(page, int) or page_size.isdigit() else 10
         contain_keys = request.args.get('contain_keys')
         contain_keys = contain_keys.split(',') if contain_keys else []
+        sort = request.args.get('sort')
+        desc = request.args.get('desc')
 
         query_params = {}
         for k, v in request.args.items():
@@ -78,6 +80,12 @@ class RestModel(MethodView):
         query = self.model.query.filter_by(**query_params)
         for k, v in contain_params.items():
             query = query.filter(getattr(self.model, k).contains(v))
+
+        if sort and hasattr(self.model, sort):
+            if desc and str(desc) == '1':
+                query = query.order_by(getattr(self.model, sort).desc())
+            else:
+                query = query.order_by(getattr(self.model, sort))
 
         total = query.count()
         objs = query.slice((page - 1) * page_size, page * page_size).all()
