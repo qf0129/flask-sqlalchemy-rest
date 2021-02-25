@@ -32,7 +32,7 @@ rest.add_model(User)
 
 With the above application you can visit the following APIs:
 ```
-[GET]    http://127.0.0.1:5000/api/user
+[GET]    http://127.0.0.1:5000/api/user  # ?page=1&page_size=10&email=xxx&username=xxx&contain_keys=email,username
 [POST]   http://127.0.0.1:5000/api/user
 [GET]    http://127.0.0.1:5000/api/user/<id>
 [PUT]    http://127.0.0.1:5000/api/user/<id>
