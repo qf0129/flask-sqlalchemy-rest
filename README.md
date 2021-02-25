@@ -41,12 +41,18 @@ With the above application you can visit the following APIs:
 
 ## Documentation 
 
-```
-class Rest(object):
-    def __init__(self, app=None, db=None, url_prefix='/api', auth_decorator=None):
-        ...
-    def init_app(self, app, db=None, url_prefix=None, auth_decorator=None)
-        ...
-    def add_model(self, model, url_name=None, methods=['GET', 'POST', 'PUT', 'DELETE'], ignore_columns=[]):
-        ...
-```
+
+Class `Rest()`  
+&nbsp;&nbsp;def `__init__`(app=None, db=None, url_prefix='/api', auth_decorator=None)    
+&nbsp;&nbsp;def `init_app`(app, db=None, url_prefix=None, auth_decorator=None)   
+&nbsp;&nbsp;&nbsp;&nbsp;**app:** Flask application instance  
+&nbsp;&nbsp;&nbsp;&nbsp;**db:**  Flask-SQLAlchemy instance   
+&nbsp;&nbsp;&nbsp;&nbsp;**url_prefix:** Base url path for apis   
+&nbsp;&nbsp;&nbsp;&nbsp;**auth_decorator:** Decorator function for authentication
+
+&nbsp;&nbsp;def `add_model`(model, url_name=None, methods=['GET', 'POST', 'PUT', 'DELETE'], ignore_columns=[])   
+&nbsp;&nbsp;&nbsp;&nbsp;**model:** `SQLAlchemy.Model` object  
+&nbsp;&nbsp;&nbsp;&nbsp;**url_name:** Will be displayed in url    
+&nbsp;&nbsp;&nbsp;&nbsp;**methods:** Allowed HTTP methods. Only `GET,POST,PUT,DELETE` are allowed    
+&nbsp;&nbsp;&nbsp;&nbsp;**ignore_columns:** Ignored columns in api with `GET` method    
+
