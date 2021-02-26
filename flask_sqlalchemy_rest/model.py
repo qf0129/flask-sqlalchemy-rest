@@ -1,6 +1,8 @@
 from flask import request, jsonify, current_app
 from flask.views import MethodView
-from datetime import datetime
+import datetime
+from dateutil.parser import parse
+from sqlalchemy.sql import sqltypes
 
 
 class RestModel(MethodView):
@@ -30,9 +32,7 @@ class RestModel(MethodView):
         if request.is_json:
             try:
                 obj = self.model()
-                for k, v in request.json.items():
-                    if hasattr(obj, k):
-                        setattr(obj, k, self._filter_data(v))
+                obj = self._update_model_from_dict(obj, request.json)
                 self.db.session.add(obj)
                 self.db.session.commit()
                 return self._resp(data={"id": obj.id})
@@ -46,9 +46,7 @@ class RestModel(MethodView):
             obj = self.model.query.get(id)
             if obj:
                 try:
-                    for k, v in request.json.items():
-                        if hasattr(obj, k):
-                            setattr(obj, k, self._filter_data(v))
+                    obj = self._update_model_from_dict(obj, request.json)
                     self.db.session.commit()
                     return self._resp(data={"id": obj.id})
                 except Exception as e:
@@ -96,22 +94,26 @@ class RestModel(MethodView):
         ret = {}
         for column in obj.__table__.columns:
             if column.name not in self.ignore_columns:
-                ret[column.name] = self._filter_data(getattr(obj, column.name, None))
+                value = getattr(obj, column.name)
+                if type(value) in [datetime.datetime, datetime.date, datetime.time]:
+                    ret[column.name] = str(value)
+                else:
+                    ret[column.name] = value
         return ret
 
-    def _filter_data(self, data):
-        if self._is_date_str(data):
-            return datetime.strptime(data, "%Y-%m-%d %H:%M:%S %f")
-        return data
-
-    def _is_date_str(self, text):
-        try:
-            if isinstance(text, str):
-                datetime.strptime(text, "%Y-%m-%d %H:%M:%S %f")
-                return True
-        except ValueError:
-            return False
-        return False
+    def _update_model_from_dict(self, obj, data):
+        if obj and data:
+            for k, v in data.items():
+                if hasattr(obj, k):
+                    column_type = getattr(obj.__table__.columns, k).type
+                    if isinstance(column_type, sqltypes.DateTime):
+                        v = parse(v)
+                    if isinstance(column_type, sqltypes.Date):
+                        v = parse(v).date()
+                    if isinstance(column_type, sqltypes.Time):
+                        v = parse(v).time()
+                    setattr(obj, k, v)
+        return obj
 
     def _resp(self, code=200, msg="OK", data={}):
         return jsonify(code=code, msg=msg, data=data), code
