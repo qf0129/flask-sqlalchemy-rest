@@ -1,0 +1,36 @@
+# REST Client allows you to send HTTP request and view the response in Visual Studio Code directly.
+# see: https://github.com/Huachao/vscode-restclient/
+
+
+@host = http://127.0.0.1:5000
+
+###
+GET {{host}}/api/user
+
+###
+GET {{host}}/api/user/1
+
+###
+POST {{host}}/api/user
+Content-Type: application/json
+
+{
+    "name": "name1"
+}
+
+###
+PUT {{host}}/api/user/1
+Content-Type: application/json
+
+{
+    "name": "name1",
+    "ctime1": "2021 10 10 10:10:10",
+    "ctime2": "2021/11/11",
+    "ctime3": "12:12:12",
+    "key_float": 12.123,
+    "age": 123,
+    "enabled": null
+}
+
+###
+DELETE {{host}}/api/user/2
