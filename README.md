@@ -32,7 +32,7 @@ rest.add_model(User)
 
 With the above application you can visit the following APIs:
 ```
-[GET]    http://127.0.0.1:5000/api/user  # ?page=1&page_size=10&email=xxx&username=xxx&contain_keys=email,username
+[GET]    http://127.0.0.1:5000/api/user
 [POST]   http://127.0.0.1:5000/api/user
 [GET]    http://127.0.0.1:5000/api/user/<id>
 [PUT]    http://127.0.0.1:5000/api/user/<id>
@@ -42,15 +42,24 @@ With the above application you can visit the following APIs:
 ## Documentation 
 
 
-Class `Rest()`  
-&nbsp;&nbsp;def `__init__`(app=None, db=None, url_prefix='/api', auth_decorator=None)    
-&nbsp;&nbsp;def `init_app`(app, db=None, url_prefix=None, auth_decorator=None)   
+#### GET parmas 
+`[GET] http://127.0.0.1:5000/api/user?page=1&page_size=10&sort=id&desc=1&email=xxx&username=xxx&contain_keys=email,username`  
+**page:** Page index, default 1   
+**page_size:** Number of pages, default 10   
+**sort:** Column name to sort  
+**desc:** If `desc=1`, will sort the data in descending order   
+**email:** Column name of User   
+**username:** Column name of User   
+**contain_keys:** The column will query with `contains`     
+
+#### Class `Rest`
+&nbsp;&nbsp;```def __init__(app=None, db=None, url_prefix='/api', auth_decorator=None)```    
 &nbsp;&nbsp;&nbsp;&nbsp;**app:** Flask application instance  
 &nbsp;&nbsp;&nbsp;&nbsp;**db:**  Flask-SQLAlchemy instance   
 &nbsp;&nbsp;&nbsp;&nbsp;**url_prefix:** Base url path for apis   
 &nbsp;&nbsp;&nbsp;&nbsp;**auth_decorator:** Decorator function for authentication
 
-&nbsp;&nbsp;def `add_model`(model, url_name=None, methods=['GET', 'POST', 'PUT', 'DELETE'], ignore_columns=[])   
+&nbsp;&nbsp;```def add_model(model, url_name=None, methods=['GET', 'POST', 'PUT', 'DELETE'], ignore_columns=[])```   
 &nbsp;&nbsp;&nbsp;&nbsp;**model:** `SQLAlchemy.Model` object  
 &nbsp;&nbsp;&nbsp;&nbsp;**url_name:** Will be displayed in url    
 &nbsp;&nbsp;&nbsp;&nbsp;**methods:** Allowed HTTP methods. Only `GET,POST,PUT,DELETE` are allowed    
