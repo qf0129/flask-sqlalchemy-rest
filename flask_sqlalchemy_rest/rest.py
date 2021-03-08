@@ -4,24 +4,26 @@ from .model import RestModel
 
 class Rest(object):
 
-    def __init__(self, app=None, db=None, url_prefix='/api', auth_decorator=None):
+    def __init__(self, app=None, db=None, url_prefix='/api', auth_decorator=None, max_page_size=100):
         self.app = app
         self.db = db
         self.url_prefix = url_prefix
         self.auth_decorator = auth_decorator
+        self.max_page_size = max_page_size
         if app is not None and db is not None:
-            self.init_app(app, db, url_prefix, auth_decorator)
+            self.init_app(app, db, url_prefix, auth_decorator, max_page_size)
 
-    def init_app(self, app, db=None, url_prefix=None, auth_decorator=None):
+    def init_app(self, app, db=None, url_prefix=None, auth_decorator=None, max_page_size=100):
         self.app = app
         self.db = db or self.db
         self.url_prefix = url_prefix or self.url_prefix
         self.auth_decorator = auth_decorator or self.auth_decorator
+        self.max_page_size = max_page_size or self.max_page_size
 
     def add_model(self, model, url_name=None, methods=['GET', 'POST', 'PUT', 'DELETE'], ignore_columns=[]):
         model_name = model.__tablename__
         blueprint = Blueprint(f'rest_{model_name}', __name__, url_prefix=self.url_prefix)
-        view_func = RestModel.as_view(model_name, db=self.db, model=model, ignore_columns=ignore_columns)
+        view_func = RestModel.as_view(model_name, db=self.db, model=model, ignore_columns=ignore_columns, max_page_size=self.max_page_size)
         if self.auth_decorator:
             view_func = self.auth_decorator(view_func)
         url_name = url_name if url_name else model_name

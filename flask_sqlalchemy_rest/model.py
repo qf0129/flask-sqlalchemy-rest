@@ -7,10 +7,11 @@ from sqlalchemy.sql import sqltypes
 
 class RestModel(MethodView):
 
-    def __init__(self, db, model, ignore_columns=[]):
+    def __init__(self, db, model, ignore_columns=[], max_page_size=100):
         self.db = db
         self.model = model
         self.ignore_columns = ignore_columns
+        self.max_page_size = max_page_size
 
     def get(self, id=None):
         if id is None:
@@ -61,23 +62,40 @@ class RestModel(MethodView):
         page = int(page) if isinstance(page, int) or page.isdigit() else 1
         page_size = request.args.get('page_size', 10)
         page_size = int(page_size) if isinstance(page, int) or page_size.isdigit() else 10
-        contain_keys = request.args.get('contain_keys')
-        contain_keys = contain_keys.split(',') if contain_keys else []
+        if self.max_page_size is not None and self.max_page_size > 0:
+            page_size = page_size if page_size <= self.max_page_size else self.max_page_size
         sort = request.args.get('sort')
         desc = request.args.get('desc')
 
-        query_params = {}
+        query = self.model.query
         for k, v in request.args.items():
-            if hasattr(self.model, k) and k not in contain_keys:
-                query_params[k] = v
-        contain_params = {}
-        for k in contain_keys:
-            if hasattr(self.model, k) and k in request.args:
-                contain_params[k] = request.args[k]
-
-        query = self.model.query.filter_by(**query_params)
-        for k, v in contain_params.items():
-            query = query.filter(getattr(self.model, k).contains(v))
+            if isinstance(k, str):
+                ks = k.split(':')
+                if hasattr(self.model, ks[0]):
+                    col = getattr(self.model, ks[0])
+                    v = self._filter_datetime(type(col.type), v)
+                    if len(ks) > 1:
+                        v = None if v == 'null' else v
+                        if ks[1] == 'eq':
+                            query = query.filter(col == v)
+                        if ks[1] == 'ne':
+                            query = query.filter(col != v)
+                        if ks[1] == 'in':
+                            query = query.filter(col.in_(v.split(',')))
+                        if ks[1] == 'notin':
+                            query = query.filter(col.notin_(v.split(',')))
+                        if ks[1] == 'contains':
+                            query = query.filter(col.contains(v))
+                        if ks[1] == 'gt':
+                            query = query.filter(col > v)
+                        if ks[1] == 'ge':
+                            query = query.filter(col >= v)
+                        if ks[1] == 'lt':
+                            query = query.filter(col < v)
+                        if ks[1] == 'le':
+                            query = query.filter(col <= v)
+                    else:
+                        query = query.filter(col == v)
 
         if sort and hasattr(self.model, sort):
             if desc and str(desc) == '1':
@@ -106,13 +124,17 @@ class RestModel(MethodView):
             for k, v in data.items():
                 if hasattr(obj, k):
                     column_type = getattr(obj.__table__.columns, k).type
-                    if isinstance(column_type, sqltypes.DateTime):
-                        v = parse(v)
-                    if isinstance(column_type, sqltypes.Date):
-                        v = parse(v).date()
-                    if isinstance(column_type, sqltypes.Time):
-                        v = parse(v).time()
+                    v = self._filter_datetime(type(column_type), v)
                     setattr(obj, k, v)
+        return obj
+
+    def _filter_datetime(self, type, obj):
+        if type == sqltypes.DateTime:
+            obj = parse(obj)
+        if type == sqltypes.Date:
+            obj = parse(obj).date()
+        if type == sqltypes.Time:
+            obj = parse(obj).time()
         return obj
 
     def _resp(self, code=200, msg="OK", data={}):
