@@ -37,23 +37,35 @@ With the above application you can visit the following APIs:
 [GET]    http://127.0.0.1:5000/api/user/<id>
 [PUT]    http://127.0.0.1:5000/api/user/<id>
 [DELETE] http://127.0.0.1:5000/api/user/<id>
+``` 
+And you can add params in GET url:
+
 ```
+[GET] http://127.0.0.1:5000/api/user?page=1&page_size=10&sort=id&desc=1&email:eq=xxx&username:contains=xxx 
+```
+`page` Page index, default 1   
+`page_size` Number of pages, default 10   
+`sort` Column name to sort  
+`desc` If `desc=1`, will sort the data in descending order   
+`email:eq` filter email with `operator` `eq`  
+`username:contains` filter username with `operator` `contains`  
 
-## Documentation 
 
+# Documentation 
 
-#### GET parmas 
-`[GET] http://127.0.0.1:5000/api/user?page=1&page_size=10&sort=id&desc=1&email=xxx&username=xxx&contain_keys=email,username`  
-**page:** Page index, default 1   
-**page_size:** Number of pages, default 10   
-**sort:** Column name to sort  
-**desc:** If `desc=1`, will sort the data in descending order   
-**email:** Column name of User   
-**username:** Column name of User   
-**contain_keys:** The column will query with `contains`     
+### Operator
+`eq` equal  
+`ne` not equal  
+`gt` greter than  
+`ge` greter equal  
+`lt` less than  
+`le` less equal  
+`in` in a list, like `http://127.0.0.1:5000/api/user?name:in=Name1,Name2,Name3 `  
+`notin` not in a list  
+`contains` contains some strings  
 
-#### Class `Rest`
-&nbsp;&nbsp;```def __init__(app=None, db=None, url_prefix='/api', auth_decorator=None)```    
+### Class `Rest`
+&nbsp;&nbsp;```def __init__(app=None, db=None, url_prefix='/api', auth_decorator=None, max_page_size=100)```    
 &nbsp;&nbsp;&nbsp;&nbsp;**app:** Flask application instance  
 &nbsp;&nbsp;&nbsp;&nbsp;**db:**  Flask-SQLAlchemy instance   
 &nbsp;&nbsp;&nbsp;&nbsp;**url_prefix:** Base url path for apis   
