@@ -43,12 +43,12 @@ And you can add params in GET url:
 ```
 [GET] http://127.0.0.1:5000/api/user?page=1&page_size=10&sort=id&desc=1&email:eq=xxx&username:contains=xxx 
 ```
-`page` Page index, default 1   
-`page_size` Number of pages, default 10   
-`sort` Column name to sort  
-`desc` If `desc=1`, will sort the data in descending order   
-`email:eq` filter email with `operator` `eq`  
-`username:contains` filter username with `operator` `contains`  
+`page` page index, default 1   
+`page_size` number of pages, default 10   
+`sort` column name to sort  
+`desc` if `desc=1`, will sort the data in descending order   
+`email:eq` filter email with  [operator](#Operator) `eq`  
+`username:contains` filter username with [operator](#Operator) `contains`  
 
 
 # Documentation 
@@ -70,6 +70,7 @@ And you can add params in GET url:
 &nbsp;&nbsp;&nbsp;&nbsp;**db:**  Flask-SQLAlchemy instance   
 &nbsp;&nbsp;&nbsp;&nbsp;**url_prefix:** Base url path for apis   
 &nbsp;&nbsp;&nbsp;&nbsp;**auth_decorator:** Decorator function for authentication
+&nbsp;&nbsp;&nbsp;&nbsp;**max_page_size:** max page size in GET api
 
 &nbsp;&nbsp;```def add_model(model, url_name=None, methods=['GET', 'POST', 'PUT', 'DELETE'], ignore_columns=[])```   
 &nbsp;&nbsp;&nbsp;&nbsp;**model:** `SQLAlchemy.Model` object  
