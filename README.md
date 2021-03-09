@@ -47,8 +47,8 @@ And you can add params in GET url:
 `page_size` number of pages, default 10   
 `sort` column name to sort  
 `desc` if `desc=1`, will sort the data in descending order   
-`email:eq` filter email with  [operator](#Operator) `eq`  
-`username:contains` filter username with [operator](#Operator) `contains`  
+`email:eq` filter email with operator [`eq`](#Operator)    
+`username:contains` filter username with operator [`contains`](#Operator)   
 
 
 # Documentation 
