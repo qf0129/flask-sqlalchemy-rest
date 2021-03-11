@@ -129,12 +129,13 @@ class RestModel(MethodView):
         return obj
 
     def _filter_datetime(self, type, obj):
-        if type == sqltypes.DateTime:
-            obj = parse(obj)
-        if type == sqltypes.Date:
-            obj = parse(obj).date()
-        if type == sqltypes.Time:
-            obj = parse(obj).time()
+        if obj:
+            if type == sqltypes.DateTime:
+                obj = parse(obj)
+            if type == sqltypes.Date:
+                obj = parse(obj).date()
+            if type == sqltypes.Time:
+                obj = parse(obj).time()
         return obj
 
     def _resp(self, code=200, msg="OK", data={}):
