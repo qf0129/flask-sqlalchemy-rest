@@ -58,14 +58,14 @@ class RestModel(MethodView):
         return self._resp(code=400, msg='invalid json')
 
     def query_all(self):
-        page = request.args.get('page', 1)
+        page = request.args.get('_page', 1)
         page = int(page) if isinstance(page, int) or page.isdigit() else 1
-        page_size = request.args.get('page_size', 10)
+        page_size = request.args.get('_page_size', 10)
         page_size = int(page_size) if isinstance(page, int) or page_size.isdigit() else 10
         if self.max_page_size is not None and self.max_page_size > 0:
             page_size = page_size if page_size <= self.max_page_size else self.max_page_size
-        sort = request.args.get('sort')
-        desc = request.args.get('desc')
+        sort = request.args.get('_sort')
+        desc = request.args.get('_desc')
 
         query = self.model.query
         for k, v in request.args.items():

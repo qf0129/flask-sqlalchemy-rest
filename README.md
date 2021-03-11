@@ -41,12 +41,12 @@ With the above application you can visit the following APIs:
 And you can add params in GET url:
 
 ```
-[GET] http://127.0.0.1:5000/api/user?page=1&page_size=10&sort=id&desc=1&email:eq=xxx&username:contains=xxx 
+[GET] http://127.0.0.1:5000/api/user?_page=1&_page_size=10&_sort=id&_desc=1&email:eq=xxx&username:contains=xxx 
 ```
-`page` page index, default 1   
-`page_size` number of pages, default 10   
-`sort` column name to sort  
-`desc` if `desc=1`, will sort the data in descending order   
+`_page` page index, default 1   
+`_page_size` number of pages, default 10   
+`_sort` column name to sort  
+`_desc` if `_desc=1`, will sort the data in descending order   
 `email:eq` filter email with operator [`eq`](#Operator)    
 `username:contains` filter username with operator [`contains`](#Operator)   
 
