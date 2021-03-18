@@ -72,9 +72,10 @@ And you can add params in GET url:
 &nbsp;&nbsp;&nbsp;&nbsp;**auth_decorator:** Decorator function for authentication
 &nbsp;&nbsp;&nbsp;&nbsp;**max_page_size:** max page size in GET api
 
-&nbsp;&nbsp;```def add_model(model, url_name=None, methods=['GET', 'POST', 'PUT', 'DELETE'], ignore_columns=[])```   
+&nbsp;&nbsp;```def add_model(model, url_name=None, methods=['GET', 'POST', 'PUT', 'DELETE'], ignore_columns=[], json_columns=[])```   
 &nbsp;&nbsp;&nbsp;&nbsp;**model:** `SQLAlchemy.Model` object  
 &nbsp;&nbsp;&nbsp;&nbsp;**url_name:** Will be displayed in url    
 &nbsp;&nbsp;&nbsp;&nbsp;**methods:** Allowed HTTP methods. Only `GET,POST,PUT,DELETE` are allowed    
-&nbsp;&nbsp;&nbsp;&nbsp;**ignore_columns:** Ignored columns in api with `GET` method    
+&nbsp;&nbsp;&nbsp;&nbsp;**ignore_columns:** Ignored columns in `GET` api     
+&nbsp;&nbsp;&nbsp;&nbsp;**json_columns:** Columns to be parsed into JSON format   
 
