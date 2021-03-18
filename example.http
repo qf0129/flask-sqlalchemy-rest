@@ -2,7 +2,7 @@
 # see: https://github.com/Huachao/vscode-restclient/
 
 
-@host = http://127.0.0.1:5000
+@host = http://127.0.0.1:5001
 
 ###
 GET {{host}}/api/user
@@ -15,7 +15,8 @@ POST {{host}}/api/user
 Content-Type: application/json
 
 {
-    "name": "name1"
+    "name": "name1",
+    "key3": "{\"aa\": 123}"
 }
 
 ###
@@ -24,7 +25,7 @@ Content-Type: application/json
 
 {
     "name": "name1",
-    "ctime1": "2021 10 10 10:10:10",
+    "ctime1": "2021 10 10 10:10",
     "ctime2": "2021/11/11",
     "ctime3": "12:12:12",
     "key_float": 12.123,

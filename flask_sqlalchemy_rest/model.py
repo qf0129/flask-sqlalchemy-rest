@@ -1,16 +1,17 @@
 from flask import request, jsonify, current_app
 from flask.views import MethodView
-import datetime
 from dateutil.parser import parse
 from sqlalchemy.sql import sqltypes
+import json
 
 
 class RestModel(MethodView):
 
-    def __init__(self, db, model, ignore_columns=[], max_page_size=100):
+    def __init__(self, db, model, ignore_columns=[], json_columns=[], max_page_size=100):
         self.db = db
         self.model = model
         self.ignore_columns = ignore_columns
+        self.json_columns = json_columns
         self.max_page_size = max_page_size
 
     def get(self, id=None):
@@ -73,7 +74,7 @@ class RestModel(MethodView):
                 ks = k.split(':')
                 if hasattr(self.model, ks[0]):
                     col = getattr(self.model, ks[0])
-                    v = self._filter_datetime(type(col.type), v)
+                    v = self._str_to_date_time(type(col.type), v)
                     if len(ks) > 1:
                         v = None if v == 'null' else v
                         if ks[1] == 'eq':
@@ -113,8 +114,10 @@ class RestModel(MethodView):
         for column in obj.__table__.columns:
             if column.name not in self.ignore_columns:
                 value = getattr(obj, column.name)
-                if type(value) in [datetime.datetime, datetime.date, datetime.time]:
+                if value and column.type.__class__ in [sqltypes.DateTime, sqltypes.Date, sqltypes.Time]:
                     ret[column.name] = str(value)
+                elif column.name in self.json_columns:
+                    ret[column.name] = self._str_to_json(value)
                 else:
                     ret[column.name] = value
         return ret
@@ -123,20 +126,36 @@ class RestModel(MethodView):
         if obj and data:
             for k, v in data.items():
                 if hasattr(obj, k):
-                    column_type = getattr(obj.__table__.columns, k).type
-                    v = self._filter_datetime(type(column_type), v)
+                    column_type = type(getattr(obj.__table__.columns, k).type)
+                    if column_type in [sqltypes.DateTime, sqltypes.Date, sqltypes.Time]:
+                        v = self._str_to_date_time(column_type, v)
+                    if k in self.json_columns:
+                        v = self._json_to_str(v)
                     setattr(obj, k, v)
         return obj
 
-    def _filter_datetime(self, type, obj):
-        if obj:
-            if type == sqltypes.DateTime:
-                obj = parse(obj)
-            if type == sqltypes.Date:
-                obj = parse(obj).date()
-            if type == sqltypes.Time:
-                obj = parse(obj).time()
+    def _str_to_date_time(self, column_type, value):
+        if value:
+            if column_type == sqltypes.DateTime:
+                value = parse(value)
+            if column_type == sqltypes.Date:
+                value = parse(value).date()
+            if column_type == sqltypes.Time:
+                value = parse(value).time()
+        return value
+
+    def _json_to_str(self, obj):
+        if obj and isinstance(obj, dict):
+            return json.dumps(obj)
         return obj
+
+    def _str_to_json(self, text):
+        result = text
+        try:
+            result = json.loads(text)
+        except:
+            result = text
+        return result
 
     def _resp(self, code=200, msg="OK", data={}):
         return jsonify(code=code, msg=msg, data=data), code
