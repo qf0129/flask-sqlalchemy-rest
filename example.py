@@ -6,6 +6,7 @@ import datetime
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///example.sqlite"
+# app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:123@127.0.0.1/test"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 # app.config["SQLALCHEMY_ECHO"] = True
 
@@ -15,7 +16,7 @@ rest = Rest(app, db, max_page_size=300)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
+    name = db.Column(db.String(100))
     age = db.Column(db.Integer)
     key1 = db.Column(db.Float)
     key2 = db.Column(db.Boolean)
@@ -29,4 +30,4 @@ with app.app_context():
     db.create_all()
 
 
-rest.add_model(User, ignore_columns=['key1'], json_columns=['key3'])
+rest.add_model(User, ignore_columns=['key1'], json_columns=['key3'], search_columns=['name', 'key3'])

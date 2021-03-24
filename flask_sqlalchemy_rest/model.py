@@ -7,11 +7,12 @@ import json
 
 class RestModel(MethodView):
 
-    def __init__(self, db, model, ignore_columns=[], json_columns=[], max_page_size=100):
+    def __init__(self, db, model, ignore_columns=[], json_columns=[], search_columns=[], max_page_size=100):
         self.db = db
         self.model = model
         self.ignore_columns = ignore_columns
         self.json_columns = json_columns
+        self.search_columns = search_columns
         self.max_page_size = max_page_size
 
     def get(self, id=None):
@@ -67,6 +68,7 @@ class RestModel(MethodView):
             page_size = page_size if page_size <= self.max_page_size else self.max_page_size
         sort = request.args.get('_sort')
         desc = request.args.get('_desc')
+        search = request.args.get('_search')
 
         query = self.model.query
         for k, v in request.args.items():
@@ -77,37 +79,58 @@ class RestModel(MethodView):
                     v = self._str_to_date_time(type(col.type), v)
                     if len(ks) > 1:
                         v = None if v == 'null' else v
-                        if ks[1] == 'eq':
-                            query = query.filter(col == v)
-                        if ks[1] == 'ne':
-                            query = query.filter(col != v)
-                        if ks[1] == 'in':
-                            query = query.filter(col.in_(v.split(',')))
-                        if ks[1] == 'notin':
-                            query = query.filter(col.notin_(v.split(',')))
-                        if ks[1] == 'contains':
-                            query = query.filter(col.contains(v))
-                        if ks[1] == 'gt':
-                            query = query.filter(col > v)
-                        if ks[1] == 'ge':
-                            query = query.filter(col >= v)
-                        if ks[1] == 'lt':
-                            query = query.filter(col < v)
-                        if ks[1] == 'le':
-                            query = query.filter(col <= v)
+                        query = self._filter_with_operator(query, col, ks[1], v)
                     else:
                         query = query.filter(col == v)
 
-        if sort and hasattr(self.model, sort):
-            if desc and str(desc) == '1':
-                query = query.order_by(getattr(self.model, sort).desc())
-            else:
-                query = query.order_by(getattr(self.model, sort))
+        query = self._filter_with_search(query, search)
+        query = self._filter_with_sort(query, sort, desc)
 
         total = query.count()
         objs = query.slice((page - 1) * page_size, page * page_size).all()
         ret = {"list": [self._to_dict(o) for o in objs], "page": page, "page_size": page_size, "total": total}
         return self._resp(data=ret)
+
+    def _filter_with_search(self, query, search):
+        if search and self.search_columns:
+            if self.db.engine.name != 'sqlite':
+                # sqlite has no concat function
+                cols = []
+                for col_name in self.search_columns:
+                    if hasattr(self.model, col_name):
+                        cols.append(getattr(self.model, col_name))
+                if cols:
+                    query = query.filter(self.db.func.concat(*cols).contains(search))
+        return query
+
+    def _filter_with_sort(self, query, sort, desc):
+        if sort and hasattr(self.model, sort):
+            if desc and str(desc) == '1':
+                query = query.order_by(getattr(self.model, sort).desc())
+            else:
+                query = query.order_by(getattr(self.model, sort))
+        return query
+
+    def _filter_with_operator(self, query, coloumn, operator, value):
+        if operator == 'eq':
+            query = query.filter(coloumn == value)
+        if operator == 'ne':
+            query = query.filter(coloumn != value)
+        if operator == 'in':
+            query = query.filter(coloumn.in_(value.split(',')))
+        if operator == 'notin':
+            query = query.filter(coloumn.notin_(value.split(',')))
+        if operator == 'contains':
+            query = query.filter(coloumn.contains(value))
+        if operator == 'gt':
+            query = query.filter(coloumn > value)
+        if operator == 'ge':
+            query = query.filter(coloumn >= value)
+        if operator == 'lt':
+            query = query.filter(coloumn < value)
+        if operator == 'le':
+            query = query.filter(coloumn <= value)
+        return query
 
     def _to_dict(self, obj):
         ret = {}

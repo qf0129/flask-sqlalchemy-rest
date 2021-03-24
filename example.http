@@ -5,7 +5,7 @@
 @host = http://127.0.0.1:5001
 
 ###
-GET {{host}}/api/user
+GET {{host}}/api/user?_search=e3
 
 ###
 GET {{host}}/api/user/1
