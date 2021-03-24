@@ -47,6 +47,7 @@ And you can add params in GET url:
 `_page_size` number of pages, default 10   
 `_sort` column name to sort  
 `_desc` if `_desc=1`, will sort the data in descending order   
+`_serach` query columns with `search_columns` option      
 `email:eq` filter email with operator [`eq`](#Operator)    
 `username:contains` filter username with operator [`contains`](#Operator)   
 
@@ -72,10 +73,11 @@ And you can add params in GET url:
 &nbsp;&nbsp;&nbsp;&nbsp;**auth_decorator:** Decorator function for authentication
 &nbsp;&nbsp;&nbsp;&nbsp;**max_page_size:** max page size in GET api
 
-&nbsp;&nbsp;```def add_model(model, url_name=None, methods=['GET', 'POST', 'PUT', 'DELETE'], ignore_columns=[], json_columns=[])```   
+&nbsp;&nbsp;```def add_model(model, url_name=None, methods=['GET', 'POST', 'PUT', 'DELETE'], ignore_columns=[], json_columns=[], search_columns=[])```   
 &nbsp;&nbsp;&nbsp;&nbsp;**model:** `SQLAlchemy.Model` object  
 &nbsp;&nbsp;&nbsp;&nbsp;**url_name:** Will be displayed in url    
 &nbsp;&nbsp;&nbsp;&nbsp;**methods:** Allowed HTTP methods. Only `GET,POST,PUT,DELETE` are allowed    
 &nbsp;&nbsp;&nbsp;&nbsp;**ignore_columns:** Ignored columns in `GET` api     
 &nbsp;&nbsp;&nbsp;&nbsp;**json_columns:** Columns to be parsed into JSON format   
+&nbsp;&nbsp;&nbsp;&nbsp;**search_columns:** Columns can query with `_serach` param in `GET` api    
 
