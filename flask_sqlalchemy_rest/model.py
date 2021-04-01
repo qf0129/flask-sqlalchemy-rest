@@ -40,7 +40,7 @@ class RestModel(MethodView):
                 self.db.session.commit()
                 return self._resp(data={"id": obj.id})
             except Exception as e:
-                current_app.logger.warning(str(e))
+                current_app.logger.error(str(e))
                 return self._resp(code=400, msg='invalid data')
         return self._resp(code=400, msg='invalid json')
 
@@ -53,7 +53,7 @@ class RestModel(MethodView):
                     self.db.session.commit()
                     return self._resp(data={"id": obj.id})
                 except Exception as e:
-                    current_app.logger.warning(str(e))
+                    current_app.logger.error(str(e))
                     return self._resp(code=400, msg='invalid data')
             else:
                 return self._resp(code=404, msg='obj not found')
@@ -122,6 +122,8 @@ class RestModel(MethodView):
             query = query.filter(coloumn.notin_(value.split(',')))
         if operator == 'contains':
             query = query.filter(coloumn.contains(value))
+        if operator == 'notcontains':
+            query = query.filter(~coloumn.contains(value))
         if operator == 'gt':
             query = query.filter(coloumn > value)
         if operator == 'ge':
@@ -152,6 +154,13 @@ class RestModel(MethodView):
                     column_type = type(getattr(obj.__table__.columns, k).type)
                     if column_type in [sqltypes.DateTime, sqltypes.Date, sqltypes.Time]:
                         v = self._str_to_date_time(column_type, v)
+                    if column_type == sqltypes.Boolean:
+                        if str(v).lower() in ['1', 'true', 'yes']:
+                            v = True
+                        elif str(v).lower() in ['0', 'false', 'no']:
+                            v = False
+                        else:
+                            v = None
                     if k in self.json_columns:
                         v = self._json_to_str(v)
                     setattr(obj, k, v)
