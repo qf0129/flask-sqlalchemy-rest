@@ -5,7 +5,7 @@
 @host = http://127.0.0.1:5001
 
 ###
-GET {{host}}/api/user?_search=e3
+GET {{host}}/api/user?id:le=3&name:nc=aa&_join=user_address
 
 ###
 GET {{host}}/api/user/1
@@ -15,7 +15,8 @@ POST {{host}}/api/user
 Content-Type: application/json
 
 {
-    "name": "name1",
+    "name": "name123",
+    "key2": null,
     "key3": "{\"aa\": 123}"
 }
 
@@ -24,7 +25,7 @@ PUT {{host}}/api/user/1
 Content-Type: application/json
 
 {
-    "name": "name1",
+    "name":"aaname1",
     "ctime1": "2021 10 10 10:10",
     "ctime2": "2021/11/11",
     "ctime3": "12:12:12",
@@ -32,6 +33,17 @@ Content-Type: application/json
     "age": 123,
     "enabled": null
 }
+###
+GET {{host}}/api/user_address
 
 ###
-DELETE {{host}}/api/user/2
+POST {{host}}/api/user_address
+Content-Type: application/json
+
+{
+    "user_id": 22,
+    "address":"address444"
+}
+
+###
+DELETE {{host}}/api/user_address/1
