@@ -64,10 +64,10 @@ And you can add params in GET url:
 `ge` greter equal   
 `lt` less than   
 `le` less equal   
-`in` in a list, split with ','  
-`ni` not in a list , split with ',' 
-`ct` contains string    
-`nc` not contains string   
+`in` in a list, split with ','   
+`ni` not in a list , split with ','    
+`ct` contains string     
+`nc` not contains string    
 `sw` start with string      
 `ew` end with string    
 
