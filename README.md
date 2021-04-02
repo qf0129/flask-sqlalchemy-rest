@@ -51,11 +51,11 @@ And you can add params in GET url:
 # Documentation 
 
 ### Built Params
-`_page` page index, default 1   
-`_page_size` number of pages, default 10   
-`_sort` column name to sort  
-`_desc` if 1, will sort in descending order, default 0
-`_serach` query text in columns that configured `search_columns`       
+`_page` page index, default 1    
+`_page_size` number of pages, default 10    
+`_sort` column name to sort     
+`_desc` if 1, will sort in descending order, default 0   
+`_serach` query text in columns that configured `search_columns`        
 
 ### Operator
 `eq` equal   
