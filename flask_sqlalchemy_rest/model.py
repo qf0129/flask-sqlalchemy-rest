@@ -2,17 +2,20 @@ from flask import request, jsonify, current_app
 from flask.views import MethodView
 from dateutil.parser import parse
 from sqlalchemy.sql import sqltypes
+from sqlalchemy.orm.attributes import InstrumentedAttribute
+from collections import Iterable
 import json
 
 
 class RestModel(MethodView):
 
-    def __init__(self, db, model, ignore_columns=[], json_columns=[], search_columns=[], max_page_size=100):
+    def __init__(self, db, model, ignore_columns=[], json_columns=[], search_columns=[], join_models={}, max_page_size=100):
         self.db = db
         self.model = model
         self.ignore_columns = ignore_columns
         self.json_columns = json_columns
         self.search_columns = search_columns
+        self.join_models = join_models
         self.max_page_size = max_page_size
 
     def get(self, id=None):
@@ -75,9 +78,31 @@ class RestModel(MethodView):
         sort = request.args.get('_sort')
         desc = request.args.get('_desc')
         search = request.args.get('_search')
+        join = request.args.get('_join')
 
         query = self.model.query
-        for k, v in request.args.items():
+        query = self._filter_with_join(query, join)
+        query = self._filter_with_params(query, request.args)
+        query = self._filter_with_search(query, search)
+        query = self._filter_with_sort(query, sort, desc)
+        total = query.count()
+        rows = query.slice((page - 1) * page_size, page * page_size).all()
+
+        list = []
+        for row in rows:
+            if isinstance(row, Iterable):
+                data = self._to_dict(row[0])
+                if len(row) > 1 and row[1]:
+                    data[row[1].__tablename__] = self._to_dict(row[1])
+                list.append(data)
+            else:
+                list.append(self._to_dict(row))
+
+        ret = {"list": list, "page": page, "page_size": page_size, "total": total}
+        return self._resp(data=ret)
+
+    def _filter_with_params(self, query, pramas):
+        for k, v in pramas.items():
             if isinstance(k, str):
                 ks = k.split(':')
                 if hasattr(self.model, ks[0]):
@@ -88,14 +113,25 @@ class RestModel(MethodView):
                         query = self._filter_with_operator(query, col, ks[1], v)
                     else:
                         query = query.filter(col == v)
+        return query
 
-        query = self._filter_with_search(query, search)
-        query = self._filter_with_sort(query, sort, desc)
+    def _filter_with_join(self, query, join_table):
+        if join_table and join_table in self.join_models:
+            obj = self.join_models.get(join_table)
+            if obj:
+                model = obj.get('model')
+                column_a = obj.get('column_a')
+                column_b = obj.get('column_b')
+                inner_join = obj.get('inner_join')
+                if column_a and isinstance(column_a, InstrumentedAttribute) \
+                        and column_b and isinstance(column_b, InstrumentedAttribute):
+                    query = self.db.session.query(self.model, model)
+                    if inner_join is True:
+                        query = query.join(model, column_a == column_b)
+                    else:
+                        query = query.outerjoin(model, column_a == column_b)
 
-        total = query.count()
-        objs = query.slice((page - 1) * page_size, page * page_size).all()
-        ret = {"list": [self._to_dict(o) for o in objs], "page": page, "page_size": page_size, "total": total}
-        return self._resp(data=ret)
+        return query
 
     def _filter_with_search(self, query, search):
         if search and self.search_columns:
@@ -146,15 +182,16 @@ class RestModel(MethodView):
 
     def _to_dict(self, obj):
         ret = {}
-        for column in obj.__table__.columns:
-            if column.name not in self.ignore_columns:
-                value = getattr(obj, column.name)
-                if value and column.type.__class__ in [sqltypes.DateTime, sqltypes.Date, sqltypes.Time]:
-                    ret[column.name] = str(value)
-                elif column.name in self.json_columns:
-                    ret[column.name] = self._str_to_json(value)
-                else:
-                    ret[column.name] = value
+        if obj:
+            for column in obj.__table__.columns:
+                if column.name not in self.ignore_columns:
+                    value = getattr(obj, column.name)
+                    if value and column.type.__class__ in [sqltypes.DateTime, sqltypes.Date, sqltypes.Time]:
+                        ret[column.name] = str(value)
+                    elif column.name in self.json_columns:
+                        ret[column.name] = self._str_to_json(value)
+                    else:
+                        ret[column.name] = value
         return ret
 
     def _verify_params(self, obj, data):

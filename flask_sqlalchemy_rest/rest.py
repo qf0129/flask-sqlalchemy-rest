@@ -20,10 +20,17 @@ class Rest(object):
         self.auth_decorator = auth_decorator or self.auth_decorator
         self.max_page_size = max_page_size or self.max_page_size
 
-    def add_model(self, model, url_name=None, methods=['GET', 'POST', 'PUT', 'DELETE'], ignore_columns=[], json_columns=[], search_columns=[]):
+    def add_model(
+            self, model, url_name=None, methods=['GET', 'POST', 'PUT', 'DELETE'],
+            ignore_columns=[], json_columns=[], search_columns=[], join_models={}):
+
         model_name = model.__tablename__
         blueprint = Blueprint(f'rest_{model_name}', __name__, url_prefix=self.url_prefix)
-        view_func = RestModel.as_view(model_name, db=self.db, model=model, ignore_columns=ignore_columns, json_columns=json_columns, search_columns=search_columns, max_page_size=self.max_page_size)
+        view_func = RestModel.as_view(
+            model_name, db=self.db, model=model, ignore_columns=ignore_columns,
+            json_columns=json_columns, search_columns=search_columns,
+            join_models=join_models, max_page_size=self.max_page_size
+        )
         if self.auth_decorator:
             view_func = self.auth_decorator(view_func)
         url_name = url_name if url_name else model_name
