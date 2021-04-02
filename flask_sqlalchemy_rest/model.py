@@ -122,14 +122,6 @@ class RestModel(MethodView):
             query = query.filter(coloumn == value)
         if operator == 'ne':
             query = query.filter(coloumn != value)
-        if operator == 'in':
-            query = query.filter(coloumn.in_(value.split(',')))
-        if operator == 'notin':
-            query = query.filter(coloumn.notin_(value.split(',')))
-        if operator == 'contains':
-            query = query.filter(coloumn.contains(value))
-        if operator == 'notcontains':
-            query = query.filter(~coloumn.contains(value))
         if operator == 'gt':
             query = query.filter(coloumn > value)
         if operator == 'ge':
@@ -138,6 +130,18 @@ class RestModel(MethodView):
             query = query.filter(coloumn < value)
         if operator == 'le':
             query = query.filter(coloumn <= value)
+        if operator == 'in':
+            query = query.filter(coloumn.in_(value.split(',')))
+        if operator == 'ni':
+            query = query.filter(coloumn.notin_(value.split(',')))
+        if operator == 'ct':
+            query = query.filter(coloumn.contains(value))
+        if operator == 'nc':
+            query = query.filter(~coloumn.contains(value))
+        if operator == 'sw':
+            query = query.filter(coloumn.like(str(value) + '%'))
+        if operator == 'ew':
+            query = query.filter(coloumn.like('%' + str(value)))
         return query
 
     def _to_dict(self, obj):

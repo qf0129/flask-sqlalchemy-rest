@@ -41,29 +41,35 @@ With the above application you can visit the following APIs:
 And you can add params in GET url:
 
 ```
-[GET] http://127.0.0.1:5000/api/user?_page=1&_page_size=10&_sort=id&_desc=1&email:eq=xxx&username:contains=xxx 
+[GET] http://127.0.0.1:5000/api/user?_page=1&_page_size=10&email:eq=xxx 
 ```
-`_page` page index, default 1   
-`_page_size` number of pages, default 10   
-`_sort` column name to sort  
-`_desc` if `_desc=1`, will sort the data in descending order   
-`_serach` query columns with `search_columns` option      
-`email:eq` filter email with operator [`eq`](#Operator)    
-`username:contains` filter username with operator [`contains`](#Operator)   
+`_page` and `_page_size` are both [`Built Params`](#Built Params)   
+`email` is column name of User model    
+`eq` is an [`Operator`](#Operator)   
 
 
 # Documentation 
 
+### Built Params
+`_page` page index, default 1   
+`_page_size` number of pages, default 10   
+`_sort` column name to sort  
+`_desc` if `_desc=1`, will sort the data in descending order   
+`_serach` query text in columns that configured `search_columns`       
+
 ### Operator
-`eq` equal  
-`ne` not equal  
-`gt` greter than  
-`ge` greter equal  
-`lt` less than  
-`le` less equal  
-`in` in a list, like `http://127.0.0.1:5000/api/user?name:in=Name1,Name2,Name3 `  
-`notin` not in a list  
-`contains` contains some strings  
+`eq` equal   
+`ne` not equal   
+`gt` greter than   
+`ge` greter equal   
+`lt` less than   
+`le` less equal   
+`in` in a list, split with ','  
+`ni` not in a list , split with ',' 
+`ct` contains string    
+`nc` not contains string   
+`sw` start with string      
+`ew` end with string    
 
 ### Class `Rest`
 &nbsp;&nbsp;```def __init__(app=None, db=None, url_prefix='/api', auth_decorator=None, max_page_size=100)```    
