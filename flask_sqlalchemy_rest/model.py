@@ -35,6 +35,9 @@ class RestModel(MethodView):
         if request.is_json:
             try:
                 obj = self.model()
+                err_msg = self._verify_params(obj, request.json)
+                if err_msg:
+                    return self._resp(code=400, msg=err_msg)
                 obj = self._update_model_from_dict(obj, request.json)
                 self.db.session.add(obj)
                 self.db.session.commit()
@@ -49,6 +52,9 @@ class RestModel(MethodView):
             obj = self.model.query.get(id)
             if obj:
                 try:
+                    err_msg = self._verify_params(obj, request.json)
+                    if err_msg:
+                        return self._resp(code=400, msg=err_msg)
                     obj = self._update_model_from_dict(obj, request.json)
                     self.db.session.commit()
                     return self._resp(data={"id": obj.id})
@@ -147,8 +153,21 @@ class RestModel(MethodView):
                     ret[column.name] = value
         return ret
 
+    def _verify_params(self, obj, data):
+        if not data or not isinstance(data, dict):
+            return 'invalid json'
+        for col in obj.__table__.columns:
+            if not col.nullable and not col.primary_key:
+                if data.get(col.name) is None and getattr(obj, col.name) is None:
+                    return f'{col.name} is required'
+            if type(col.type) == sqltypes.Boolean and col.name in data:
+                val = data.get(col.name)
+                if str(val).lower() not in ['none', '1', '0', 'true', 'false', 'yes', 'no']:
+                    return f'{col.name} require boolean value'
+        return None
+
     def _update_model_from_dict(self, obj, data):
-        if obj and data:
+        if data:
             for k, v in data.items():
                 if hasattr(obj, k):
                     column_type = type(getattr(obj.__table__.columns, k).type)
