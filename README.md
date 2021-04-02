@@ -43,8 +43,8 @@ And you can add params in GET url:
 ```
 [GET] http://127.0.0.1:5000/api/user?_page=1&_page_size=10&email:eq=xxx 
 ```
-`_page` and `_page_size` are both [`Built Params`](#Built Params)   
-`email` is column name of User model    
+`_page` and `_page_size` are both [`Built Params`](#built-params)   
+`email` is column name of User    
 `eq` is an [`Operator`](#Operator)   
 
 
@@ -54,7 +54,7 @@ And you can add params in GET url:
 `_page` page index, default 1   
 `_page_size` number of pages, default 10   
 `_sort` column name to sort  
-`_desc` if `_desc=1`, will sort the data in descending order   
+`_desc` if 1, will sort in descending order, default 0
 `_serach` query text in columns that configured `search_columns`       
 
 ### Operator
@@ -76,8 +76,8 @@ And you can add params in GET url:
 &nbsp;&nbsp;&nbsp;&nbsp;**app:** Flask application instance  
 &nbsp;&nbsp;&nbsp;&nbsp;**db:**  Flask-SQLAlchemy instance   
 &nbsp;&nbsp;&nbsp;&nbsp;**url_prefix:** Base url path for apis   
-&nbsp;&nbsp;&nbsp;&nbsp;**auth_decorator:** Decorator function for authentication
-&nbsp;&nbsp;&nbsp;&nbsp;**max_page_size:** max page size in GET api
+&nbsp;&nbsp;&nbsp;&nbsp;**auth_decorator:** Decorator function for authentication   
+&nbsp;&nbsp;&nbsp;&nbsp;**max_page_size:** max page size in GET api  
 
 &nbsp;&nbsp;```def add_model(model, url_name=None, methods=['GET', 'POST', 'PUT', 'DELETE'], ignore_columns=[], json_columns=[], search_columns=[])```   
 &nbsp;&nbsp;&nbsp;&nbsp;**model:** `SQLAlchemy.Model` object  
