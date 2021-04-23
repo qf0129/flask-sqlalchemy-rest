@@ -221,7 +221,7 @@ class RestModel(MethodView):
                             v = False
                         else:
                             v = None
-                    if k in self.json_columns:
+                    if isinstance(v, dict) or isinstance(v, list):
                         v = self._json_to_str(v)
                     setattr(obj, k, v)
         return obj
@@ -242,12 +242,11 @@ class RestModel(MethodView):
         return obj
 
     def _str_to_json(self, text):
-        result = text
         try:
-            result = json.loads(text)
+            return json.loads(text)
         except:
-            result = text
-        return result
+            return text
+        return text
 
     def _resp(self, code=200, msg="OK", data={}):
         return jsonify(code=code, msg=msg, data=data), code
