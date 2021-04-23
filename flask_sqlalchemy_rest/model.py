@@ -222,7 +222,7 @@ class RestModel(MethodView):
                         else:
                             v = None
                     if isinstance(v, dict) or isinstance(v, list):
-                        v = self._json_to_str(v)
+                        v = json.dumps(v) if v else None
                     setattr(obj, k, v)
         return obj
 
@@ -235,11 +235,6 @@ class RestModel(MethodView):
             if column_type == sqltypes.Time:
                 value = parse(value).time()
         return value
-
-    def _json_to_str(self, obj):
-        if obj and isinstance(obj, dict):
-            return json.dumps(obj)
-        return obj
 
     def _str_to_json(self, text):
         try:
