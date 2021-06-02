@@ -9,7 +9,7 @@ import json
 
 class RestModel(MethodView):
 
-    def __init__(self, db, model, ignore_columns=[], json_columns=[], search_columns=[], join_models={}, max_page_size=100):
+    def __init__(self, db, model, ignore_columns=[], json_columns=[], search_columns=[], join_models={}, max_page_size=100, deleted_column_key=None):
         self.db = db
         self.model = model
         self.ignore_columns = ignore_columns
@@ -17,6 +17,7 @@ class RestModel(MethodView):
         self.search_columns = search_columns
         self.join_models = join_models
         self.max_page_size = max_page_size
+        self.deleted_column_key = deleted_column_key
 
     def get(self, id=None):
         if id is None:
@@ -30,7 +31,10 @@ class RestModel(MethodView):
     def delete(self, id):
         obj = self.model.query.get(id)
         if obj:
-            self.db.session.delete(obj)
+            if self.deleted_column_key is not None and hasattr(obj, self.deleted_column_key):
+                setattr(obj, self.deleted_column_key, True)
+            else:
+                self.db.session.delete(obj)
             self.db.session.commit()
         return self._resp()
 
