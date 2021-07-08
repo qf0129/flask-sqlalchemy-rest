@@ -72,7 +72,7 @@ class RestModel(MethodView):
                 return self._resp(code=404, msg='obj not found')
         return self._resp(code=400, msg='invalid json')
 
-    def query_all(self):
+    def query_with_args(self):
         page = request.args.get('_page', 1)
         page = int(page) if isinstance(page, int) or page.isdigit() else 1
         page_size = request.args.get('_page_size', 10)
@@ -102,7 +102,10 @@ class RestModel(MethodView):
             else:
                 list.append(self._to_dict(row))
 
-        ret = {"list": list, "page": page, "page_size": page_size, "total": total}
+        return {"list": list, "page": page, "page_size": page_size, "total": total}
+
+    def query_all(self):
+        ret = self.query_with_args()
         return self._resp(data=ret)
 
     def _filter_with_params(self, query, pramas):
