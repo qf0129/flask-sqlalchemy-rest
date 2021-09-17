@@ -149,7 +149,7 @@ class RestModel(MethodView):
                     if hasattr(self.model, col_name):
                         cols.append(getattr(self.model, col_name))
                 if cols:
-                    query = query.filter(self.db.func.concat(*cols).contains(search))
+                    query = query.filter(self.db.func.concat_ws('_', *cols).contains(search))
         return query
 
     def _filter_with_sort(self, query, sort, desc):
@@ -207,11 +207,11 @@ class RestModel(MethodView):
         for col in obj.__table__.columns:
             if not col.nullable and not col.primary_key:
                 if data.get(col.name) is None and getattr(obj, col.name) is None:
-                    return f'{col.name} is required'
+                    return col.name + ' is required'
             if type(col.type) == sqltypes.Boolean and col.name in data:
                 val = data.get(col.name)
                 if str(val).lower() not in ['none', '1', '0', 'true', 'false', 'yes', 'no']:
-                    return f'{col.name} require boolean value'
+                    return col.name + ' require boolean value'
         return None
 
     def _update_model_from_dict(self, obj, data):

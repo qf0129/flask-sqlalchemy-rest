@@ -1,7 +1,7 @@
 from setuptools import setup
 import re
 
-with open("flask_sqlalchemy_rest/__init__.py", encoding="utf8") as f:
+with open("flask_sqlalchemy_rest/__init__.py", 'r') as f:
     version = re.search(r'__version__ = "(.*?)"', f.read()).group(1)
 
 setup(
@@ -16,5 +16,5 @@ setup(
     packages=['flask_sqlalchemy_rest'],
     include_package_data=True,
     platforms="any",
-    install_requires=["Flask-SQLAlchemy>=2.4.0", "python-dateutil>=2.7.0"],
+    install_requires=["Flask-SQLAlchemy>=2.0", "python-dateutil>=2.5.0"],
 )
