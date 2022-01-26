@@ -46,3 +46,6 @@ user_join_models = {
 
 rest.add_model(User, ignore_columns=['key1'], json_columns=['key3'], search_columns=['name', 'key3'], join_models=user_join_models)
 rest.add_model(UserAddress)
+
+if __name__=="__main__":
+    app.run(host="0.0.0.0",port=5050)
